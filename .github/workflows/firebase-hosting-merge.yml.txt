@@ -14,9 +14,7 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          # Usunięto problematyczne pola z sekcji "with"
           projectId: dziennik-elewatora
           channelId: live
         env:
-          # Token wklejony jako zmienna środowiskowa - to uciszy błąd "Unexpected input"
           FIREBASE_TOKEN: 1//09Mbw4NH2qk4gCgYIARAAGAkSNgF-L9IrGdavM7JZ-Fb1JadZQFqaN5_Mas0l9_oz_VNt6_H7F4XL-nIsqVfXtOcINq2lcwDWLw
