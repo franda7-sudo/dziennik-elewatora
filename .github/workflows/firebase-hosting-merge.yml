@@ -1,3 +1,4 @@
+Example: firebase deploy --token "$FIREBASE_TOKEN"
 name: Deploy to Firebase Hosting on merge
 on:
   push:
@@ -13,9 +14,12 @@ jobs:
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DZIENNIK_ELEWATORA }}
+          repoToken: ${{ repoToken: ${{ secrets.GITHUB_TOKEN }}
+          # Usunąłem problematyczne linie stąd
           projectId: dziennik-elewatora
           channelId: live
+ }}
+               
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+                   FIREBASE_TOKEN: ${{ 09-el4p1O6XSsCgYIARAAGAkSNgF-L9IrQK5ILgW30pTNuBLu7XWmLW9wpFzokooSO9tydVFDk40yxc0-73LRbvRLGtR9DSOZfg
+ }}
