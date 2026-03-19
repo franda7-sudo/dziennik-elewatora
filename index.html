@@ -2,98 +2,120 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dziennik Elewatora PWA</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#27ae60">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elewator CMMS V4.3 - Panel Pracownika</title>
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 15px; background: #f4f7f6; }
-        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; font-size: 1.2rem; margin-top: 0; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-        button { background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        button:hover { opacity: 0.9; }
-        .status-offline { background: #e74c3c; color: white; text-align: center; padding: 10px; display: none; position: sticky; top: 0; z-index: 100; }
-        #app-content { display: none; }
-        #signature-pad { border: 1px solid #ddd; background: #fff; border-radius: 4px; touch-action: none; width: 100%; height: 150px; cursor: crosshair; }
-        .btn-secondary { background: #7f8c8d; width: auto; padding: 5px 15px; }
-        .btn-danger { background: #e74c3c; margin-top: 15px; }
-    </style>
+        :root { --primary: #2c3e50; --secondary: #27ae60; --warning: #f39c12; --danger: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; background: var(--bg); color: #333; line-height: 1.4; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        h1 { font-size: 1.2rem; color: var(--primary); margin: 0; }
+        h2 { font-size: 0.8rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        
+        #staff_checkboxes { 
+            display: flex; flex-wrap: wrap; gap: 8px; border: 1px solid #ddd; 
+            padding: 10px; border-radius: 8px; background: #fff; margin-bottom: 10px;
+        }
+        .staff-item { 
+            display: flex; align-items: center; background: #f0f2f5; 
+            padding: 8px 12px; border-radius: 20px; border: 1px solid #e0e0e0;
+            white-space: nowrap; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+        }
+        .staff-item:has(input:checked) { background: #dcfce7; border-color: var(--secondary); }
+        .staff-item input { width: 18px; height: 18px; margin: 0 8px 0 0; }
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        button { background: var(--secondary); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        
+        .table-container { width: 100%; overflow-x: auto; margin-top: 10px; background: #fff; border-radius: 8px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 400px; }
+        th { text-align: left; background: #f8f9fa; padding: 12px; border-bottom: 2px solid #ddd; color: #666; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; border: 1px solid #c8e6c9; }
+        
+        #photo_preview { max-width: 100%; margin-top: 10px; display: none; border-radius: 8px; border: 1px solid #ddd; }
+        #app-content { display: none; }
+        #login-screen { max-width: 400px; margin: 40px auto; text-align: center; }
+    </style>
 </head>
 <body>
 
-    <div id="offline-alert" class="status-offline">Pracujesz w trybie OFFLINE - dane zostaną zsynchronizowane później.</div>
-
-    <div id="login-screen" class="card" style="max-width: 400px; margin: 50px auto;">
-        <h2>🔐 Logowanie do Systemu</h2>
-        <input type="email" id="login-email" placeholder="Email służbowy">
-        <input type="password" id="login-password" placeholder="Hasło">
-        <button onclick="handleLogin()">Zaloguj się</button>
-        <p id="login-error" style="color: red; display: none; font-size: 0.8rem;"></p>
+    <div id="login-screen" class="card">
+        <h1>🌾 ELEWATOR SYSTEM</h1>
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">Dziennik Zmianowy V4.3</p>
+        <select id="login-role" onchange="document.getElementById('admin-auth').style.display = this.value==='admin'?'block':'none'">
+            <option value="user">Panel Pracownika</option>
+            <option value="admin">Panel Administratora (Logowanie)</option>
+        </select>
+        <div id="admin-auth" style="display:none; margin-top:10px;">
+            <input type="email" id="adm-email" placeholder="Email administratora">
+            <input type="password" id="adm-pass" placeholder="Hasło">
+        </div>
+        <button onclick="handleEntry()" style="margin-top:15px;">WEJDŹ DO SYSTEMU</button>
     </div>
 
     <div id="app-content">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h1>Dziennik Zmiany</h1>
-            <button onclick="handleLogout()" class="btn-secondary">Wyloguj</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h1>Dziennik Pracy</h1>
+            <button onclick="location.reload()" style="width:auto; padding:6px 12px; background:#7f8c8d; font-size:0.75rem;">WYLOGUJ</button>
         </div>
 
         <div class="card">
-            <h2>👥 Obsada Zmiany</h2>
-            <input type="text" id="staff" placeholder="Imiona i nazwiska pracowników">
-            <select id="shift_no">
-                <option value="1">Zmiana I (06:00 - 14:00)</option>
-                <option value="2">Zmiana II (14:00 - 22:00)</option>
-                <option value="3">Zmiana III (22:00 - 06:00)</option>
-            </select>
+            <h2>👥 Obsada (Zapamiętana)</h2>
+            <div id="staff_checkboxes">Ładowanie listy pracowników...</div>
+            <div class="grid-2">
+                <select id="shift_id">
+                    <option value="1">I Zmiana</option>
+                    <option value="2">II Zmiana</option>
+                    <option value="3">III Zmiana</option>
+                </select>
+                <input type="date" id="report_date">
+            </div>
         </div>
 
         <div class="card">
-            <h2>🌾 Rejestr Czynności</h2>
-            <select id="act_type">
-                <option value="przyjecie">Przyjęcie towaru</option>
-                <option value="przerzuty">Przesyp/Ruchy</option>
-                <option value="wydania_mlyn">Wydania młyn</option>
-                <option value="wydania_kaszarnia">Wydania kaszarnia</option> 
-                <option value="wydania_platkarnia">Wydania płatkarnia</option>
-                <option value="wydania_zewnetrzna">Wydania zewnętrzna</option>
-                <option value="sprzątanie">Sprzątanie</option>
-            </select>
-            <textarea id="act_desc" placeholder="Opis czynności (ilość, nr silosu...)"></textarea>
-            <button onclick="saveActivity()">Zapisz czynność</button>
+            <h2>📊 Rejestr Wykonanych Prac</h2>
+            <select id="act_type"></select>
+            <div class="grid-2">
+                <input type="text" id="act_loc" placeholder="Lokalizacja / Silos">
+                <input type="text" id="act_val" placeholder="Wartość / Tony">
+            </div>
+            <button onclick="saveAct()">DODAJ WPIS</button>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Czas</th><th>Typ pracy</th><th>Miejsce</th><th>Parametr</th></tr>
+                    </thead>
+                    <tbody id="daily-act-body">
+                        <tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">Wybierz datę...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="card">
-            <h2>🛠️ Ewidencja Awarii</h2>
-            <input type="text" id="fail_equip" placeholder="Kod urządzenia (np. RED-04)">
-            <select id="fail_severity">
-                <option value="low">Niski priorytet</option>
-                <option value="medium">Średni (uwaga)</option>
-                <option value="critical">KRYTYCZNY (STOP)</option>
+        <div class="card" style="border-left: 5px solid var(--danger); background: #fffdfd;">
+            <h2>🛠️ Zgłoszenie Serwisowe / Awaria</h2>
+            <select id="mach_select"></select>
+            <select id="fail_type">
+                <option value="awaria">⚠️ AWARIA (Usterka)</option>
+                <option value="konserwacja">⚙️ KONSERWACJA / PRZEGLĄD</option>
             </select>
-            <textarea id="fail_desc" placeholder="Opis usterki..."></textarea>
+            <textarea id="fail_desc" rows="3" placeholder="Opis problemu..."></textarea>
             
-            <label style="display:block; margin: 10px 0; font-weight: bold;">Dodaj zdjęcie usterki:</label>
+            <label style="display:block; margin: 10px 0 5px; font-weight: bold; font-size: 0.8rem;">Dodaj zdjęcie usterki:</label>
             <input type="file" id="fail_photo" accept="image/*" capture="environment">
-            <img id="photo_preview" src="" alt="Podgląd" style="max-width: 100%; margin-top: 10px; display: none; border-radius: 5px;">
+            <img id="photo_preview" src="" alt="Podgląd">
 
-            <label style="display:block; margin: 15px 0 5px; font-weight: bold;">Podpis pracownika:</label>
-            <canvas id="signature-pad"></canvas>
-            <button onclick="clearSignature()" class="btn-secondary" style="margin-top: 5px; font-size: 0.8rem;">Wyczyść podpis</button>
-
-            <button onclick="saveFailure()" class="btn-danger">Zgłoś awarię</button>
+            <button id="btn-submit-fail" onclick="saveFail()" style="background:var(--danger); margin-top:10px;">WYŚLIJ ZGŁOSZENIE</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDerQvG4mlaa-v2ZP4Sowx6_P9XkVfpluM",
@@ -108,172 +130,158 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
+        const storage = getStorage(app);
 
-        emailjs.init("hs_OQseuLVA2jpBfR");
-
-        // --- LOGOWANIE ---
-        window.handleLogin = () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(error => {
-                const errNode = document.getElementById('login-error');
-                errNode.innerText = "Błąd logowania: Sprawdź dane.";
-                errNode.style.display = 'block';
-            });
+        // --- OBSŁUGA WEJŚCIA ---
+        window.handleEntry = async () => {
+            const role = document.getElementById('login-role').value;
+            if(role === 'admin') {
+                const email = document.getElementById('adm-email').value;
+                const pass = document.getElementById('adm-pass').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    window.location.href = 'admin.html';
+                } catch(e) { alert("Błąd logowania administratora."); }
+            } else {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                document.getElementById('report_date').valueAsDate = new Date();
+                initApp();
+            }
         };
 
-        window.handleLogout = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            document.getElementById('login-screen').style.display = user ? 'none' : 'block';
-            document.getElementById('app-content').style.display = user ? 'block' : 'none';
-        });
-
-        // --- ZAPIS CZYNNOŚCI ---
-        window.saveActivity = async () => {
-            const staff = document.getElementById('staff').value;
-            const desc = document.getElementById('act_desc').value;
-            if(!staff || !desc) return alert("Uzupełnij obsadę i opis!");
-
-            const data = {
-                timestamp: new Date().toISOString(),
-                staff: staff,
-                shift: document.getElementById('shift_no').value,
-                type: document.getElementById('act_type').value,
-                description: desc
-            };
-
-            try {
-                await set(push(ref(db, 'activities')), data);
-                alert("Zapisano czynność.");
-                document.getElementById('act_desc').value = "";
-            } catch (e) { alert("Błąd zapisu: " + e.message); }
-        };
-
-        // --- ZAPIS AWARII ---
-        window.saveFailure = async () => {
-            const equip = document.getElementById('fail_equip').value;
-            const desc = document.getElementById('fail_desc').value;
-            const severity = document.getElementById('fail_severity').value;
-            const photoPreview = document.getElementById('photo_preview');
-            const photoData = photoPreview.style.display === 'block' ? photoPreview.src : null;
-
-            if (!equip || !desc) return alert("Wypełnij dane awarii!");
-           if (navigator.onLine) {
-           emailjs.send('service_jf5jik8', 'template_sjxwa0r', {
-              equipment: equip,
-               severity: severity,
-            description: desc,
-            timestamp: new Date().toLocaleString()
-          }).then((response) => {
-           console.log('SUCCESS!', response.status, response.text);
-       }, (error) => {
-           console.log('FAILED...', error);
-          alert("Błąd EmailJS: " + JSON.stringify(error));
-    });
-}
-            const report = {
-                timestamp: new Date().toISOString(),
-                equipment: equip,
-                severity: severity,
-                description: desc,
-                photo: photoData 
-            };
-
-            try {
-                // 1. Firebase
-                await set(push(ref(db, 'failures')), report);
+        function initApp() {
+            // Ładowanie pracowników z pamięcią zaznaczenia
+            onValue(ref(db, 'settings/workers'), s => {
+                const workers = s.val() || [];
+                const savedStaff = JSON.parse(localStorage.getItem('selectedStaff') || '[]');
                 
-                // 2. PDF
-                generateFailurePDF(report);
+                document.getElementById('staff_checkboxes').innerHTML = Object.values(workers).map(name => {
+                    const isChecked = savedStaff.includes(name) ? 'checked' : '';
+                    return `
+                        <label class="staff-item">
+                            <input type="checkbox" name="staff" value="${name}" ${isChecked} onchange="saveStaffToMemory()">
+                            <span>${name}</span>
+                        </label>
+                    `;
+                }).join('');
+            });
 
-                // 3. EmailJS
-                if (navigator.onLine) {
-                    // UWAGA: Podmień 'service_xxx' na swój Service ID z EmailJS
-                    await emailjs.send('service_jf5jik8', 'template_x2idxhb', {
-                        equipment: equip,
-                        severity: severity,
-                        description: desc,
-                        timestamp: new Date().toLocaleString()
-                    });
-                }
+            onValue(ref(db, 'settings/activities'), s => {
+                const acts = s.val() || [];
+                document.getElementById('act_type').innerHTML = Object.values(acts).map(a => `<option value="${a}">${a}</option>`).join('');
+            });
 
-                alert("Zgłoszono awarię i wysłano e-mail!");
-                location.reload(); 
-            } catch (err) { alert("Błąd: " + err.message); }
-        };
-
-        // --- PODPIS (Canvas) ---
-        const canvas = document.getElementById('signature-pad');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
-
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: clientX - rect.left, y: clientY - rect.top };
+            onValue(ref(db, 'settings/machines'), s => {
+                const m = s.val() || {};
+                document.getElementById('mach_select').innerHTML = '<option value="">-- Wybierz Maszynę --</option>' + 
+                    Object.keys(m).map(id => `<option value="${id}">${id} - ${m[id].name}</option>`).join('');
+            });
+            loadDailyActivities();
         }
 
-        ['mousedown', 'touchstart'].forEach(evt => canvas.addEventListener(evt, (e) => {
-            drawing = true;
-            const pos = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-            if(evt === 'touchstart') e.preventDefault();
-        }));
+        // --- PAMIĘĆ OBSADY ---
+        window.saveStaffToMemory = () => {
+            const selected = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+            localStorage.setItem('selectedStaff', JSON.stringify(selected));
+        };
 
-        ['mousemove', 'touchmove'].forEach(evt => canvas.addEventListener(evt, (e) => {
-            if (!drawing) return;
-            const pos = getPos(e);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            if(evt === 'touchmove') e.preventDefault();
-        }));
-
-        ['mouseup', 'touchend'].forEach(evt => window.addEventListener(evt, () => drawing = false));
-
-        window.clearSignature = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // --- ZDJĘCIA ---
-        document.getElementById('fail_photo').onchange = function(e) {
+        // --- PODGLĄD ZDJĘCIA ---
+        document.getElementById('fail_photo').onchange = (e) => {
             const reader = new FileReader();
             reader.onload = (ev) => {
                 const img = document.getElementById('photo_preview');
                 img.src = ev.target.result;
                 img.style.display = 'block';
             };
-            reader.readAsDataURL(e.target.files[0]);
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
         };
 
-        // --- PDF ---
-        function generateFailurePDF(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("RAPORT AWARII - ELEWATOR", 14, 20);
-            doc.autoTable({
-                startY: 30,
-                head: [['Pole', 'Informacja']],
-                body: [
-                    ['Data', new Date(data.timestamp).toLocaleString()],
-                    ['Urządzenie', data.equipment],
-                    ['Priorytet', data.severity.toUpperCase()],
-                    ['Opis', data.description]
-                ],
+        // --- ZAPIS CZYNNOŚCI ---
+        window.saveAct = async () => {
+            const staffArr = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+            if(staffArr.length === 0) return alert("Zaznacz obsadę!");
+            
+            try {
+                await push(ref(db, 'activities'), {
+                    timestamp: new Date().toISOString(),
+                    staff: staffArr.join(", "),
+                    type: document.getElementById('act_type').value,
+                    location: document.getElementById('act_loc').value,
+                    value: document.getElementById('act_val').value
+                });
+                document.getElementById('act_loc').value = "";
+                document.getElementById('act_val').value = "";
+            } catch(e) { alert(e.message); }
+        };
+
+        // --- ZAPIS AWARII ---
+        window.saveFail = async () => {
+            const btn = document.getElementById('btn-submit-fail');
+            const m = document.getElementById('mach_select').value;
+            const photoFile = document.getElementById('fail_photo').files[0];
+            const staffArr = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+
+            if(!m || staffArr.length === 0) return alert("Wybierz maszynę i zaznacz obsadę!");
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "WYSYŁANIE...";
+                
+                let photoURL = null;
+                if (photoFile) {
+                    const fileRef = sRef(storage, `failures/${Date.now()}_${photoFile.name}`);
+                    const snapshot = await uploadBytes(fileRef, photoFile);
+                    photoURL = await getDownloadURL(snapshot.ref);
+                }
+
+                await push(ref(db, 'failures'), {
+                    timestamp: Date.now(),
+                    machine: m,
+                    staff: staffArr.join(", "),
+                    type: document.getElementById('fail_type').value,
+                    description: document.getElementById('fail_desc').value,
+                    photo: photoURL
+                });
+                
+                alert("Zgłoszono pomyślnie!");
+                // Czyścimy tylko pola usterki, obsada zostaje dzięki localStorage
+                document.getElementById('fail_desc').value = "";
+                document.getElementById('fail_photo').value = "";
+                document.getElementById('photo_preview').style.display = "none";
+                btn.disabled = false;
+                btn.innerText = "WYŚLIJ ZGŁOSZENIE";
+            } catch(e) { 
+                alert("Błąd: " + e.message); 
+                btn.disabled = false;
+                btn.innerText = "WYŚLIJ ZGŁOSZENIE";
+            }
+        };
+
+        window.loadDailyActivities = () => {
+            const selectedDate = document.getElementById('report_date').value;
+            onValue(ref(db, 'activities'), (snap) => {
+                const data = snap.val() || {};
+                const tbody = document.getElementById('daily-act-body');
+                const filtered = Object.values(data).filter(a => a.timestamp && a.timestamp.substring(0, 10) === selectedDate);
+                
+                if (filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">Brak wpisów.</td></tr>';
+                    return;
+                }
+                filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                tbody.innerHTML = filtered.map(a => `
+                    <tr>
+                        <td><strong>${new Date(a.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</strong></td>
+                        <td><span class="badge">${a.type}</span></td>
+                        <td>${a.location || '-'}</td>
+                        <td>${a.value || '-'}</td>
+                    </tr>
+                `).join('');
             });
-            const sigData = canvas.toDataURL('image/png');
-            doc.text("Podpis:", 14, doc.lastAutoTable.finalY + 10);
-            doc.addImage(sigData, 'PNG', 14, doc.lastAutoTable.finalY + 15, 40, 15);
-            doc.save(`Awaria_${data.equipment}.pdf`);
-        }
+        };
 
-        // --- OFFLINE ---
-        window.addEventListener('online', () => document.getElementById('offline-alert').style.display = 'none');
-        window.addEventListener('offline', () => document.getElementById('offline-alert').style.display = 'block');
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(e => console.log("SW Error", e));
-        }
+        document.getElementById('report_date').onchange = loadDailyActivities;
     </script>
 </body>
 </html>
