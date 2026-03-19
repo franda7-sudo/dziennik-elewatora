@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora V4.3 - Elewator CMMS</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #27ae60; --danger: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee; }
+        h1 { color: var(--primary); border-bottom: 3px solid var(--secondary); padding-bottom: 10px; font-size: 1.5rem; }
+        h2 { font-size: 1.1rem; margin-top: 0; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
+        /* Formularze */
+        .form-group { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        input { flex: 1; min-width: 150px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+        
+        /* Przyciski */
+        button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: var(--secondary); color: white; padding: 12px 20px; }
+        .btn-del { background: #fee2e2; color: var(--danger); padding: 6px 12px; font-size: 0.8rem; }
+        .btn-del:hover { background: var(--danger); color: white; }
+        .btn-nav { background: var(--primary); color: white; padding: 12px; margin-bottom: 20px; width: 100%; display: block; text-decoration: none; text-align: center; }
+        
+        /* Listy Ustawień */
+        .list-container { max-height: 250px; overflow-y: auto; border: 1px solid #f0f0f0; border-radius: 8px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .list-item:last-child { border-bottom: none; }
+
+        /* Tabela Raportów */
+        .table-wrapper { width: 100%; overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+        th { text-align: left; background: #f8f9fa; padding: 12px; border-bottom: 2px solid #ddd; color: #666; }
+        td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        
+        /* Zdjęcia */
+        .report-img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; transition: 0.3s; }
+        .report-img:hover { transform: scale(1.1); }
+        
+        @media (max-width: 600px) {
+            .form-group { flex-direction: column; }
+            input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="btn-nav">⬅ POWRÓT DO PANELU PRACY</a>
+    
+    <h1>⚙️ System Zarządzania Elewatorem</h1>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        
+        <div class="card">
+            <h2>🚜 Maszyny i Urządzenia</h2>
+            <div class="form-group">
+                <input type="text" id="new-mach-id" placeholder="ID (np. R-01)">
+                <input type="text" id="new-mach-name" placeholder="Nazwa urządzenia">
+                <button onclick="addMachine()" class="btn-add">DODAJ</button>
+            </div>
+            <div id="list-machines" class="list-container">Ładowanie...</div>
+        </div>
+
+        <div class="card">
+            <h2>👥 Lista Pracowników</h2>
+            <div class="form-group">
+                <input type="text" id="new-worker" placeholder="Imię i Nazwisko">
+                <button onclick="addSimpleItem('workers')" class="btn-add">DODAJ</button>
+            </div>
+            <div id="list-workers" class="list-container">Ładowanie...</div>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top: 20px; border-top: 4px solid var(--danger);">
+        <h2 style="color: var(--danger);">🚨 Rejestr Zgłoszonych Awarii</h2>
+        <div class="table-wrapper">
+            <table id="reports-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Maszyna</th>
+                        <th>Zgłaszający</th>
+                        <th>Opis</th>
+                        <th>Foto</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody id="reports-body">
+                    <tr><td colspan="6" style="text-align:center; padding:20px;">Pobieranie danych...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDerQvG4mlaa-v2ZP4Sowx6_P9XkVfpluM",
+        authDomain: "elewator-dziennik.firebaseapp.com",
+        databaseURL: "https://elewator-dziennik-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "elewator-dziennik",
+        storageBucket: "elewator-dziennik.firebasestorage.app",
+        messagingSenderId: "896699001772",
+        appId: "1:896699001772:web:07633e4f9f32b5f9ad6809"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // --- SYNCHRONIZACJA USTAWIEŃ ---
+
+    function syncSettings(path, elementId, isMachine = false) {
+        onValue(ref(db, `settings/${path}`), (snap) => {
+            const data = snap.val();
+            const container = document.getElementById(elementId);
+            if (!data) { container.innerHTML = "<p style='padding:10px; color:#999;'>Brak danych.</p>"; return; }
+
+            let html = "";
+            Object.keys(data).forEach(key => {
+                const val = data[key];
+                const display = isMachine ? `<b>${key}</b> - ${val.name || val}` : val;
+                html += `
+                    <div class="list-item">
+                        <span>${display}</span>
+                        <button onclick="window.deleteSetting('${path}', '${key}')" class="btn-del">USUŃ</button>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        });
+    }
+
+    // --- FUNKCJE GLOBALNE ---
+
+    window.deleteSetting = async (path, key) => {
+        if (confirm("Czy na pewno chcesz usunąć ten element?")) {
+            await remove(ref(db, `settings/${path}/${key}`));
+        }
+    };
+
+    window.addMachine = async () => {
+        const id = document.getElementById('new-mach-id').value.trim();
+        const name = document.getElementById('new-mach-name').value.trim();
+        if (id && name) {
+            await set(ref(db, `settings/machines/${id}`), { name: name });
+            document.getElementById('new-mach-id').value = "";
+            document.getElementById('new-mach-name').value = "";
+        }
+    };
+
+    window.addSimpleItem = async (path) => {
+        const inputId = path === 'workers' ? 'new-worker' : '';
+        const val = document.getElementById(inputId).value.trim();
+        if (val) {
+            await push(ref(db, `settings/${path}`), val);
+            document.getElementById(inputId).value = "";
+        }
+    };
+
+    // --- OBSŁUGA RAPORTÓW (HISTORIA) ---
+
+    onValue(ref(db, 'failures'), (snap) => {
+        const data = snap.val();
+        const tbody = document.getElementById('reports-body');
+        if (!data) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Brak zgłoszeń.</td></tr>"; return; }
+
+        const sorted = Object.keys(data).map(k => ({id: k, ...data[k]}))
+                        .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        tbody.innerHTML = sorted.map(r => {
+            const d = new Date(r.timestamp);
+            const dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            const imgHtml = r.photo ? `<a href="${r.photo}" target="_blank"><img src="${r.photo}" class="report-img"></a>` : "—";
+            
+            return `
+                <tr>
+                    <td>${dateStr}</td>
+                    <td><strong>${r.machine}</strong></td>
+                    <td>${r.staff}</td>
+                    <td>${r.description || '—'}</td>
+                    <td>${imgHtml}</td>
+                    <td><button onclick="window.deleteReport('${r.id}')" style="background:none; font-size:1.1rem; cursor:pointer;">🗑️</button></td>
+                </tr>`;
+        }).join('');
+    });
+
+    window.deleteReport = async (id) => {
+        if (confirm("Usunąć ten raport z historii?")) {
+            await remove(ref(db, `failures/${id}`));
+        }
+    };
+
+    // Start
+    syncSettings('machines', 'list-machines', true);
+    syncSettings('workers', 'list-workers');
+</script>
+
+</body>
+</html>

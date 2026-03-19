@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin V4 - CMMS Elewator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root { --admin: #2c3e50; --accent: #3498db; --danger: #e74c3c; --success: #27ae60; --gray: #ecf0f1; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f3f5; margin: 0; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; background: #ddd; font-weight: bold; }
+        .tab-btn.active { background: var(--admin); color: white; }
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        .machine-item { display: flex; justify-content: space-between; padding: 15px; background: white; cursor: pointer; border-left: 5px solid var(--accent); margin-bottom: 5px; border-radius: 4px; border: 1px solid #eee; }
+        .machine-item:hover { background: #f9f9f9; }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); overflow-y: auto; }
+        .modal-content { background: white; margin: 2% auto; padding: 25px; width: 90%; max-width: 900px; border-radius: 15px; position: relative; }
+        
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
+        .tech-field { background: var(--gray); padding: 10px; border-radius: 6px; }
+        .tech-field label { display: block; font-size: 10px; color: #7f8c8d; text-transform: uppercase; font-weight: bold; }
+        .tech-field input, .tech-field textarea { width: 100%; border: none; background: transparent; font-weight: bold; color: var(--admin); outline: none; }
+
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 15px; }
+        .history-table th { background: #eee; padding: 10px; text-align: left; }
+        .history-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        
+        button { cursor: pointer; border-radius: 6px; border: none; font-weight: bold; }
+        .btn-main { background: var(--accent); color: white; padding: 10px 20px; }
+        .btn-save { background: var(--success); color: white; padding: 15px; width: 100%; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('machs', this)">🚜 Maszyny</button>
+    <button class="tab-btn" onclick="switchTab('sets', this)">⚙️ Ustawienia</button>
+</div>
+
+<div id="section-machs" class="section active">
+    <div class="card">
+        <h3>Ewidencja Maszyn</h3>
+        <div id="machines-list">Ładowanie...</div>
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <input type="text" id="m-id" placeholder="KOD" style="padding:10px; width:100px;">
+            <input type="text" id="m-name" placeholder="Nazwa urządzenia" style="padding:10px; flex:1;">
+            <button class="btn-main" onclick="addMachine()">Dodaj</button>
+        </div>
+    </div>
+</div>
+
+<div id="section-sets" class="section">
+    <div class="card">
+        <h3>Pracownicy</h3>
+        <div id="workers-list" style="margin-bottom:15px;"></div>
+        <input type="text" id="new-worker" placeholder="Imię i Nazwisko" style="padding:10px;">
+        <button class="btn-main" onclick="addItem('workers', 'new-worker')">Dodaj</button>
+    </div>
+</div>
+
+<div id="machineModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modal-title">Karta Maszyny</h2>
+        <div class="tech-grid" id="modal-fields">
+            <div class="tech-field"><label>Producent</label><input type="text" id="edit-prod"></div>
+            <div class="tech-field"><label>Moc (kW)</label><input type="text" id="edit-power"></div>
+            <div class="tech-field"><label>Łożyska</label><input type="text" id="edit-bear"></div>
+            <div class="tech-field"><label>DTR Link</label><input type="text" id="edit-dtr"></div>
+            <div class="tech-field" style="grid-column: span 2;"><label>Notatki</label><textarea id="edit-notes"></textarea></div>
+        </div>
+        <button class="btn-save" onclick="saveDetails()">ZAPISZ DANE</button>
+        <h3>Historia Serwisowa</h3>
+        <table class="history-table">
+            <thead><tr><th>Data</th><th>Typ</th><th>Opis</th></tr></thead>
+            <tbody id="history-body"></tbody>
+        </table>
+        <button onclick="document.getElementById('machineModal').style.display='none'" style="margin-top:10px; background:#999; color:white; padding:10px;">Zamknij</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDerQvG4mlaa-v2ZP4Sowx6_P9XkVfpluM",
+        authDomain: "elewator-dziennik.firebaseapp.com",
+        databaseURL: "https://elewator-dziennik-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "elewator-dziennik",
+        storageBucket: "elewator-dziennik.firebasestorage.app",
+        messagingSenderId: "896699001772",
+        appId: "1:896699001772:web:07633e4f9f32b5f9ad6809"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    let activeId = null;
+
+    onValue(ref(db, 'settings/machines'), snap => {
+        const data = snap.val() || {};
+        document.getElementById('machines-list').innerHTML = Object.keys(data).map(id => `
+            <div class="machine-item" onclick="openCard('${id}', '${data[id].name}')">
+                <strong>${id} - ${data[id].name}</strong>
+                <button onclick="event.stopPropagation(); removeMach('${id}')" style="color:red; background:none;">usuń</button>
+            </div>
+        `).join('');
+    });
+
+    onValue(ref(db, 'settings/workers'), snap => {
+        const list = snap.val() || [];
+        document.getElementById('workers-list').innerHTML = list.map((w,i) => `<div>${w} <button onclick="removeItem('workers', ${i})">x</button></div>`).join('');
+    });
+
+    window.openCard = (id, name) => {
+        activeId = id;
+        document.getElementById('modal-title').innerText = id + " - " + name;
+        onValue(ref(db, `settings/machines/${id}`), s => {
+            const m = s.val() || {};
+            document.getElementById('edit-prod').value = m.prod || '';
+            document.getElementById('edit-power').value = m.power || '';
+            document.getElementById('edit-bear').value = m.bear || '';
+            document.getElementById('edit-dtr').value = m.dtr || '';
+            document.getElementById('edit-notes').value = m.notes || '';
+        }, {onlyOnce: true});
+        
+        onValue(ref(db, 'failures'), snap => {
+            const all = snap.val() || {};
+            document.getElementById('history-body').innerHTML = Object.values(all).filter(f => f.machine === id).reverse().map(f => `
+                <tr><td>${f.timestamp.split('T')[0]}</td><td>${f.type}</td><td>${f.description}</td></tr>
+            `).join('');
+        }, {onlyOnce: true});
+        document.getElementById('machineModal').style.display='block';
+    };
+
+    window.saveDetails = () => {
+        const details = {
+            prod: document.getElementById('edit-prod').value,
+            power: document.getElementById('edit-power').value,
+            bear: document.getElementById('edit-bear').value,
+            dtr: document.getElementById('edit-dtr').value,
+            notes: document.getElementById('edit-notes').value
+        };
+        onValue(ref(db, `settings/machines/${activeId}/name`), n => {
+            details.name = n.val();
+            set(ref(db, `settings/machines/${activeId}`), details).then(() => alert("Zapisano!"));
+        }, {onlyOnce: true});
+    };
+
+    window.addMachine = () => {
+        const id = document.getElementById('m-id').value.toUpperCase();
+        const name = document.getElementById('m-name').value;
+        if(id && name) set(ref(db, `settings/machines/${id}`), { name: name });
+    };
+
+    window.removeMach = (id) => { if(confirm("Usunąć?")) remove(ref(db, `settings/machines/${id}`)); };
+    
+    window.addItem = (key, inputId) => {
+        const val = document.getElementById(inputId).value;
+        onValue(ref(db, 'settings/'+key), s => {
+            const l = s.val() || []; l.push(val);
+            set(ref(db, 'settings/'+key), l);
+        }, {onlyOnce: true});
+    };
+
+    window.removeItem = (key, i) => {
+        onValue(ref(db, 'settings/'+key), s => {
+            const l = s.val() || []; l.splice(i,1);
+            set(ref(db, 'settings/'+key), l);
+        }, {onlyOnce: true});
+    };
+
+    window.switchTab = (id, b) => {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-'+id).classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        b.classList.add('active');
+    };
+</script>
+</body>
+</html>

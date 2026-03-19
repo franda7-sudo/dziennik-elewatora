@@ -1,0 +1,88 @@
+.hidden {
+    display: none !important;
+}
+
+/* Opcjonalnie dla aktywnego przycisku */
+#sidebar button.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+.log-entry {
+    background: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid #007bff;
+    border-radius: 4px;
+}
+
+.entry-form textarea {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#btn-add-log {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+.awaria-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* Kolory w zależności od statusu */
+.status-oczekiwanie { border-left: 8px solid #dc3545; } /* Czerwony */
+.status-w-trakcie { border-left: 8px solid #ffc107; }  /* Żółty */
+.status-naprawione { border-left: 8px solid #28a745; opacity: 0.7; } /* Zielony */
+
+.awaria-actions {
+    margin-top: 10px;
+}
+
+.awaria-actions button {
+    margin-right: 5px;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+}.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h4 {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.stat-card p {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0 0 0;
+    color: #007bff;
+}
+
+/* Wyróżnienie krytycznych awarii */
+#stat-awarie {
+    color: #dc3545; /* Czerwony jeśli są awarie */
+}
+}

@@ -1,0 +1,18 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDerQvG4mlaa-v2ZP4Sowx6_P9XkVfpluM",
+  authDomain: "elewator-dziennik.firebaseapp.com",
+  databaseURL: "https://elewator-dziennik-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "elewator-dziennik",
+  storageBucket: "elewator-dziennik.firebasestorage.app",
+  messagingSenderId: "896699001772",
+  appId: "1:896699001772:web:07633e4f9f32b5f9ad6809"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
