@@ -14,8 +14,8 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DZIENNIK_ELEWATORA }}
-          # To jest kluczowa linijka, która użyje Twojego tokena:
-          firebaseToken: ${{ secrets.FIREBASE_TOKEN }}
+          # Usunęliśmy stąd firebaseServiceAccount, bo powodował błąd
           channelId: live
           projectId: dziennik-elewatora
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
