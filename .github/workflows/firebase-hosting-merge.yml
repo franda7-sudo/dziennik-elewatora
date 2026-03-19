@@ -1,4 +1,3 @@
-Example: firebase deploy --token "$FIREBASE_TOKEN"
 name: Deploy to Firebase Hosting on merge
 on:
   push:
@@ -14,12 +13,10 @@ jobs:
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: ${{ repoToken: ${{ secrets.GITHUB_TOKEN }}
-          # Usunąłem problematyczne linie stąd
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          # Usunięto problematyczne pola z sekcji "with"
           projectId: dziennik-elewatora
           channelId: live
- }}
-               
         env:
-                   FIREBASE_TOKEN: ${{ 09-el4p1O6XSsCgYIARAAGAkSNgF-L9IrQK5ILgW30pTNuBLu7XWmLW9wpFzokooSO9tydVFDk40yxc0-73LRbvRLGtR9DSOZfg
- }}
+          # Token wklejony jako zmienna środowiskowa - to uciszy błąd "Unexpected input"
+          FIREBASE_TOKEN: 1//09Mbw4NH2qk4gCgYIARAAGAkSNgF-L9IrGdavM7JZ-Fb1JadZQFqaN5_Mas0l9_oz_VNt6_H7F4XL-nIsqVfXtOcINq2lcwDWLw
