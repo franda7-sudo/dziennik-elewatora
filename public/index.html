@@ -1,89 +1,576 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.11.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.11.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.11.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elewator CMMS V4.3 - Panel Pracownika</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #27ae60; --warning: #f39c12; --danger: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; background: var(--bg); color: #333; line-height: 1.4; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        h1 { font-size: 1.2rem; color: var(--primary); margin: 0; }
+        h2 { font-size: 0.8rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        
+        #staff_checkboxes { 
+            display: flex; flex-wrap: wrap; gap: 8px; border: 1px solid #ddd; 
+            padding: 10px; border-radius: 8px; background: #fff; margin-bottom: 10px;
         }
-      });
+        .staff-item { 
+            display: flex; align-items: center; background: #f0f2f5; 
+            padding: 8px 12px; border-radius: 20px; border: 1px solid #e0e0e0;
+            white-space: nowrap; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+        }
+        .staff-item:has(input:checked) { background: #dcfce7; border-color: var(--secondary); }
+        .staff-item input { width: 18px; height: 18px; margin: 0 8px 0 0; }
+
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        button { background: var(--secondary); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        
+        .table-container { width: 100%; overflow-x: auto; margin-top: 10px; background: #fff; border-radius: 8px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 400px; }
+        th { text-align: left; background: #f8f9fa; padding: 12px; border-bottom: 2px solid #ddd; color: #666; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; border: 1px solid #c8e6c9; }
+        
+        #photo_preview { max-width: 100%; margin-top: 10px; display: none; border-radius: 8px; border: 1px solid #ddd; }
+        #app-content { display: none; }
+        #login-screen { max-width: 400px; margin: 40px auto; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="card">
+        <h1>🌾 ELEWATOR SYSTEM</h1>
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">Dziennik Zmianowy V4.3</p>
+        <select id="login-role" onchange="document.getElementById('admin-auth').style.display = this.value==='admin'?'block':'none'">
+            <option value="user">Panel Pracownika</option>
+            <option value="admin">Panel Administratora (Logowanie)</option>
+        </select>
+        <div id="admin-auth" style="display:none; margin-top:10px;">
+            <input type="email" id="adm-email" placeholder="Email administratora">
+            <input type="password" id="adm-pass" placeholder="Hasło">
+        </div>
+        <button onclick="handleEntry()" style="margin-top:15px;">WEJDŹ DO SYSTEMU</button>
+    </div>
+
+    <div id="app-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h1>Dziennik Pracy</h1>
+            <button onclick="location.reload()" style="width:auto; padding:6px 12px; background:#7f8c8d; font-size:0.75rem;">WYLOGUJ</button>
+        </div>
+
+        <div class="card">
+            <h2>👥 Obsada (Zapamiętana)</h2>
+            <div id="staff_checkboxes">Ładowanie listy pracowników...</div>
+            <div class="grid-2">
+                <select id="shift_id">
+                    <option value="1">I Zmiana</option>
+                    <option value="2">II Zmiana</option>
+                    <option value="3">III Zmiana</option>
+                </select>
+                <input type="date" id="report_date">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Rejestr Wykonanych Prac</h2>
+            <select id="act_type"></select>
+            <div class="grid-2">
+                <input type="text" id="act_loc" placeholder="Lokalizacja / Silos">
+                <input type="text" id="act_val" placeholder="Wartość / Tony">
+            </div>
+            <button onclick="saveAct()">DODAJ WPIS</button>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Czas</th><th>Typ pracy</th><th>Miejsce</th><th>Parametr</th></tr>
+                    </thead>
+                    <tbody id="daily-act-body">
+                        <tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">Wybierz datę...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid var(--danger); background: #fffdfd;">
+            <h2>🛠️ Zgłoszenie Serwisowe / Awaria</h2>
+            <select id="mach_select"></select>
+            <select id="fail_type">
+                <option value="awaria">⚠️ AWARIA (Usterka)</option>
+                <option value="konserwacja">⚙️ KONSERWACJA / PRZEGLĄD</option>
+            </select>
+            <textarea id="fail_desc" rows="3" placeholder="Opis problemu..."></textarea>
+            
+            <label style="display:block; margin: 10px 0 5px; font-weight: bold; font-size: 0.8rem;">Dodaj zdjęcie usterki:</label>
+            <input type="file" id="fail_photo" accept="image/*" capture="environment">
+            <img id="photo_preview" src="" alt="Podgląd">
+
+            <button id="btn-submit-fail" onclick="saveFail()" style="background:var(--danger); margin-top:10px;">WYŚLIJ ZGŁOSZENIE</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDerQvG4mlaa-v2ZP4Sowx6_P9XkVfpluM",
+            authDomain: "elewator-dziennik.firebaseapp.com",
+            databaseURL: "https://elewator-dziennik-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "elewator-dziennik",
+            storageBucket: "elewator-dziennik.firebasestorage.app",
+            messagingSenderId: "896699001772",
+            appId: "1:896699001772:web:07633e4f9f32b5f9ad6809"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        // --- OBSŁUGA WEJŚCIA ---
+        window.handleEntry = async () => {
+            const role = document.getElementById('login-role').value;
+            if(role === 'admin') {
+                const email = document.getElementById('adm-email').value;
+                const pass = document.getElementById('adm-pass').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    window.location.href = 'admin.html';
+                } catch(e) { alert("Błąd logowania administratora."); }
+            } else {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                document.getElementById('report_date').valueAsDate = new Date();
+                initApp();
+            }
+        };
+
+        function initApp() {
+            // Ładowanie pracowników z pamięcią zaznaczenia
+            onValue(ref(db, 'settings/workers'), s => {
+                const workers = s.val() || [];
+                const savedStaff = JSON.parse(localStorage.getItem('selectedStaff') || '[]');
+                
+                document.getElementById('staff_checkboxes').innerHTML = Object.values(workers).map(name => {
+                    const isChecked = savedStaff.includes(name) ? 'checked' : '';
+                    return `
+                        <label class="staff-item">
+                            <input type="checkbox" name="staff" value="${name}" ${isChecked} onchange="saveStaffToMemory()">
+                            <span>${name}</span>
+                        </label>
+                    `;
+                }).join('');
+            });
+
+            onValue(ref(db, 'settings/activities'), s => {
+                const acts = s.val() || [];
+                document.getElementById('act_type').innerHTML = Object.values(acts).map(a => `<option value="${a}">${a}</option>`).join('');
+            });
+
+            onValue(ref(db, 'settings/machines'), s => {
+                const m = s.val() || {};
+                document.getElementById('mach_select').innerHTML = '<option value="">-- Wybierz Maszynę --</option>' + 
+                    Object.keys(m).map(id => `<option value="${id}">${id} - ${m[id].name}</option>`).join('');
+            });
+            loadDailyActivities();
+        }
+
+        // --- PAMIĘĆ OBSADY ---
+        window.saveStaffToMemory = () => {
+            const selected = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+            localStorage.setItem('selectedStaff', JSON.stringify(selected));
+        };
+
+        // --- PODGLĄD ZDJĘCIA ---
+        document.getElementById('fail_photo').onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = document.getElementById('photo_preview');
+                img.src = ev.target.result;
+                img.style.display = 'block';
+            };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        };
+
+        // --- ZAPIS CZYNNOŚCI ---
+        window.saveAct = async () => {
+            const staffArr = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+            if(staffArr.length === 0) return alert("Zaznacz obsadę!");
+            
+            try {
+                await push(ref(db, 'activities'), {
+                    timestamp: new Date().toISOString(),
+                    staff: staffArr.join(", "),
+                    type: document.getElementById('act_type').value,
+                    location: document.getElementById('act_loc').value,
+                    value: document.getElementById('act_val').value
+                });
+                document.getElementById('act_loc').value = "";
+                document.getElementById('act_val').value = "";
+            } catch(e) { alert(e.message); }
+        };
+
+        // --- ZAPIS AWARII ---
+        window.saveFail = async () => {
+            const btn = document.getElementById('btn-submit-fail');
+            const m = document.getElementById('mach_select').value;
+            const photoFile = document.getElementById('fail_photo').files[0];
+            const staffArr = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+
+            if(!m || staffArr.length === 0) return alert("Wybierz maszynę i zaznacz obsadę!");
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "WYSYŁANIE...";
+                
+                let photoURL = null;
+                if (photoFile) {
+                    const fileRef = sRef(storage, `failures/${Date.now()}_${photoFile.name}`);
+                    const snapshot = await uploadBytes(fileRef, photoFile);
+                    photoURL = await getDownloadURL(snapshot.ref);
+                }
+
+                await push(ref(db, 'failures'), {
+                    timestamp: Date.now(),
+                    machine: m,
+                    staff: staffArr.join(", "),
+                    type: document.getElementById('fail_type').value,
+                    description: document.getElementById('fail_desc').value,
+                    photo: photoURL
+                });
+                
+                alert("Zgłoszono pomyślnie!");
+                // Czyścimy tylko pola usterki, obsada zostaje dzięki localStorage
+                document.getElementById('fail_desc').value = "";
+                document.getElementById('fail_photo').value = "";
+                document.getElementById('photo_preview').style.display = "none";
+                btn.disabled = false;
+                btn.innerText = "WYŚLIJ ZGŁOSZENIE";
+            } catch(e) { 
+                alert("Błąd: " + e.message); 
+                btn.disabled = false;
+                btn.innerText = "WYŚLIJ ZGŁOSZENIE";
+            }
+        };
+
+        window.loadDailyActivities = () => {
+            const selectedDate = document.getElementById('report_date').value;
+            onValue(ref(db, 'activities'), (snap) => {
+                const data = snap.val() || {};
+                const tbody = document.getElementById('daily-act-body');
+                const filtered = Object.values(data).filter(a => a.timestamp && a.timestamp.substring(0, 10) === selectedDate);
+                
+                if (filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">Brak wpisów.</td></tr>';
+                    return;
+                }
+                filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                tbody.innerHTML = filtered.map(a => `
+                    <tr>
+                        <td><strong>${new Date(a.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</strong></td>
+                        <td><span class="badge">${a.type}</span></td>
+                        <td>${a.location || '-'}</td>
+                        <td>${a.value || '-'}</td>
+                    </tr>
+                `).join('');
+            });
+        };
+
+        document.getElementById('report_date').onchange = loadDailyActivities;
     </script>
-  </body>
+</body>
+=======
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elewator CMMS V4.3 - Panel Pracownika</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #27ae60; --warning: #f39c12; --danger: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; background: var(--bg); color: #333; line-height: 1.4; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        h1 { font-size: 1.2rem; color: var(--primary); margin: 0; }
+        h2 { font-size: 0.8rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        
+        #staff_checkboxes { 
+            display: flex; flex-wrap: wrap; gap: 8px; border: 1px solid #ddd; 
+            padding: 10px; border-radius: 8px; background: #fff; margin-bottom: 10px;
+        }
+        .staff-item { 
+            display: flex; align-items: center; background: #f0f2f5; 
+            padding: 8px 12px; border-radius: 20px; border: 1px solid #e0e0e0;
+            white-space: nowrap; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+        }
+        .staff-item:has(input:checked) { background: #dcfce7; border-color: var(--secondary); }
+        .staff-item input { width: 18px; height: 18px; margin: 0 8px 0 0; }
+
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        button { background: var(--secondary); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        
+        .table-container { width: 100%; overflow-x: auto; margin-top: 10px; background: #fff; border-radius: 8px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 400px; }
+        th { text-align: left; background: #f8f9fa; padding: 12px; border-bottom: 2px solid #ddd; color: #666; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; border: 1px solid #c8e6c9; }
+        
+        #photo_preview { max-width: 100%; margin-top: 10px; display: none; border-radius: 8px; border: 1px solid #ddd; }
+        #app-content { display: none; }
+        #login-screen { max-width: 400px; margin: 40px auto; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="card">
+        <h1>🌾 ELEWATOR SYSTEM</h1>
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">Dziennik Zmianowy V4.3</p>
+        <select id="login-role" onchange="document.getElementById('admin-auth').style.display = this.value==='admin'?'block':'none'">
+            <option value="user">Panel Pracownika</option>
+            <option value="admin">Panel Administratora (Logowanie)</option>
+        </select>
+        <div id="admin-auth" style="display:none; margin-top:10px;">
+            <input type="email" id="adm-email" placeholder="Email administratora">
+            <input type="password" id="adm-pass" placeholder="Hasło">
+        </div>
+        <button onclick="handleEntry()" style="margin-top:15px;">WEJDŹ DO SYSTEMU</button>
+    </div>
+
+    <div id="app-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h1>Dziennik Pracy</h1>
+            <button onclick="location.reload()" style="width:auto; padding:6px 12px; background:#7f8c8d; font-size:0.75rem;">WYLOGUJ</button>
+        </div>
+
+        <div class="card">
+            <h2>👥 Obsada (Zapamiętana)</h2>
+            <div id="staff_checkboxes">Ładowanie listy pracowników...</div>
+            <div class="grid-2">
+                <select id="shift_id">
+                    <option value="1">I Zmiana</option>
+                    <option value="2">II Zmiana</option>
+                    <option value="3">III Zmiana</option>
+                </select>
+                <input type="date" id="report_date">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Rejestr Wykonanych Prac</h2>
+            <select id="act_type"></select>
+            <div class="grid-2">
+                <input type="text" id="act_loc" placeholder="Lokalizacja / Silos">
+                <input type="text" id="act_val" placeholder="Wartość / Tony">
+            </div>
+            <button onclick="saveAct()">DODAJ WPIS</button>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Czas</th><th>Typ pracy</th><th>Miejsce</th><th>Parametr</th></tr>
+                    </thead>
+                    <tbody id="daily-act-body">
+                        <tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">Wybierz datę...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid var(--danger); background: #fffdfd;">
+            <h2>🛠️ Zgłoszenie Serwisowe / Awaria</h2>
+            <select id="mach_select"></select>
+            <select id="fail_type">
+                <option value="awaria">⚠️ AWARIA (Usterka)</option>
+                <option value="konserwacja">⚙️ KONSERWACJA / PRZEGLĄD</option>
+            </select>
+            <textarea id="fail_desc" rows="3" placeholder="Opis problemu..."></textarea>
+            
+            <label style="display:block; margin: 10px 0 5px; font-weight: bold; font-size: 0.8rem;">Dodaj zdjęcie usterki:</label>
+            <input type="file" id="fail_photo" accept="image/*" capture="environment">
+            <img id="photo_preview" src="" alt="Podgląd">
+
+            <button id="btn-submit-fail" onclick="saveFail()" style="background:var(--danger); margin-top:10px;">WYŚLIJ ZGŁOSZENIE</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDerQvG4mlaa-v2ZP4Sowx6_P9XkVfpluM",
+            authDomain: "elewator-dziennik.firebaseapp.com",
+            databaseURL: "https://elewator-dziennik-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "elewator-dziennik",
+            storageBucket: "elewator-dziennik.firebasestorage.app",
+            messagingSenderId: "896699001772",
+            appId: "1:896699001772:web:07633e4f9f32b5f9ad6809"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        // --- OBSŁUGA WEJŚCIA ---
+        window.handleEntry = async () => {
+            const role = document.getElementById('login-role').value;
+            if(role === 'admin') {
+                const email = document.getElementById('adm-email').value;
+                const pass = document.getElementById('adm-pass').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    window.location.href = 'admin.html';
+                } catch(e) { alert("Błąd logowania administratora."); }
+            } else {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                document.getElementById('report_date').valueAsDate = new Date();
+                initApp();
+            }
+        };
+
+        function initApp() {
+            // Ładowanie pracowników z pamięcią zaznaczenia
+            onValue(ref(db, 'settings/workers'), s => {
+                const workers = s.val() || [];
+                const savedStaff = JSON.parse(localStorage.getItem('selectedStaff') || '[]');
+                
+                document.getElementById('staff_checkboxes').innerHTML = Object.values(workers).map(name => {
+                    const isChecked = savedStaff.includes(name) ? 'checked' : '';
+                    return `
+                        <label class="staff-item">
+                            <input type="checkbox" name="staff" value="${name}" ${isChecked} onchange="saveStaffToMemory()">
+                            <span>${name}</span>
+                        </label>
+                    `;
+                }).join('');
+            });
+
+            onValue(ref(db, 'settings/activities'), s => {
+                const acts = s.val() || [];
+                document.getElementById('act_type').innerHTML = Object.values(acts).map(a => `<option value="${a}">${a}</option>`).join('');
+            });
+
+            onValue(ref(db, 'settings/machines'), s => {
+                const m = s.val() || {};
+                document.getElementById('mach_select').innerHTML = '<option value="">-- Wybierz Maszynę --</option>' + 
+                    Object.keys(m).map(id => `<option value="${id}">${id} - ${m[id].name}</option>`).join('');
+            });
+            loadDailyActivities();
+        }
+
+        // --- PAMIĘĆ OBSADY ---
+        window.saveStaffToMemory = () => {
+            const selected = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+            localStorage.setItem('selectedStaff', JSON.stringify(selected));
+        };
+
+        // --- PODGLĄD ZDJĘCIA ---
+        document.getElementById('fail_photo').onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = document.getElementById('photo_preview');
+                img.src = ev.target.result;
+                img.style.display = 'block';
+            };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        };
+
+        // --- ZAPIS CZYNNOŚCI ---
+        window.saveAct = async () => {
+            const staffArr = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+            if(staffArr.length === 0) return alert("Zaznacz obsadę!");
+            
+            try {
+                await push(ref(db, 'activities'), {
+                    timestamp: new Date().toISOString(),
+                    staff: staffArr.join(", "),
+                    type: document.getElementById('act_type').value,
+                    location: document.getElementById('act_loc').value,
+                    value: document.getElementById('act_val').value
+                });
+                document.getElementById('act_loc').value = "";
+                document.getElementById('act_val').value = "";
+            } catch(e) { alert(e.message); }
+        };
+
+        // --- ZAPIS AWARII ---
+        window.saveFail = async () => {
+            const btn = document.getElementById('btn-submit-fail');
+            const m = document.getElementById('mach_select').value;
+            const photoFile = document.getElementById('fail_photo').files[0];
+            const staffArr = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+
+            if(!m || staffArr.length === 0) return alert("Wybierz maszynę i zaznacz obsadę!");
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "WYSYŁANIE...";
+                
+                let photoURL = null;
+                if (photoFile) {
+                    const fileRef = sRef(storage, `failures/${Date.now()}_${photoFile.name}`);
+                    const snapshot = await uploadBytes(fileRef, photoFile);
+                    photoURL = await getDownloadURL(snapshot.ref);
+                }
+
+                await push(ref(db, 'failures'), {
+                    timestamp: Date.now(),
+                    machine: m,
+                    staff: staffArr.join(", "),
+                    type: document.getElementById('fail_type').value,
+                    description: document.getElementById('fail_desc').value,
+                    photo: photoURL
+                });
+                
+                alert("Zgłoszono pomyślnie!");
+                // Czyścimy tylko pola usterki, obsada zostaje dzięki localStorage
+                document.getElementById('fail_desc').value = "";
+                document.getElementById('fail_photo').value = "";
+                document.getElementById('photo_preview').style.display = "none";
+                btn.disabled = false;
+                btn.innerText = "WYŚLIJ ZGŁOSZENIE";
+            } catch(e) { 
+                alert("Błąd: " + e.message); 
+                btn.disabled = false;
+                btn.innerText = "WYŚLIJ ZGŁOSZENIE";
+            }
+        };
+
+        window.loadDailyActivities = () => {
+            const selectedDate = document.getElementById('report_date').value;
+            onValue(ref(db, 'activities'), (snap) => {
+                const data = snap.val() || {};
+                const tbody = document.getElementById('daily-act-body');
+                const filtered = Object.values(data).filter(a => a.timestamp && a.timestamp.substring(0, 10) === selectedDate);
+                
+                if (filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">Brak wpisów.</td></tr>';
+                    return;
+                }
+                filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                tbody.innerHTML = filtered.map(a => `
+                    <tr>
+                        <td><strong>${new Date(a.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</strong></td>
+                        <td><span class="badge">${a.type}</span></td>
+                        <td>${a.location || '-'}</td>
+                        <td>${a.value || '-'}</td>
+                    </tr>
+                `).join('');
+            });
+        };
+
+        document.getElementById('report_date').onchange = loadDailyActivities;
+    </script>
+</body>
+>>>>>>> 6b4c8652a4a69610820863a56802bd24193d8898
 </html>

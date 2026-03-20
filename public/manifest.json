@@ -1,3 +1,29 @@
+<<<<<<< HEAD
+{
+  "short_name": "Elewator",
+  "name": "Dziennik Zmiany - Elewator PWA",
+  "description": "System raportowania czynności i awarii dla pracowników elewatora.",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#f4f7f6",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#27ae60",
+  "orientation": "portrait"
+=======
 {
   "short_name": "Elewator",
   "name": "Dziennik Zmiany - Elewator PWA",
@@ -20,4 +46,5 @@
   "scope": "/",
   "theme_color": "#27ae60",
   "orientation": "portrait"
+>>>>>>> 6b4c8652a4a69610820863a56802bd24193d8898
 }
