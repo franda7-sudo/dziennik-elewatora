@@ -1,0 +1,17 @@
+git merge --abort{
+  "rules": {
+    "settings": {
+      ".read": true,
+      ".write": "auth != null" 
+    },
+    "activities": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["timestamp"]
+    },
+    "failures": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "elewator-dziennik"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }
